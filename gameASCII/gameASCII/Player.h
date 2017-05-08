@@ -38,6 +38,7 @@ public:
 	int getMoney()const{ return _money; }
 	int getMaxHealt()const{ return _maxHealth; }
 	bool isItem(int id)const;
+	bool isAlife()const;
 
 private:
 	// Properties

@@ -14,11 +14,13 @@ void GameSystem::PlayGame()
 {
 	_level.rewriteMap(_player);
 
-	while (_level.getNumsOfEnemies() > 0)
+	while (_level.getNumsOfEnemies() > 0 && _player.isAlife())
 	{
 		_level.updateEnemies(_player);
 		playerMove();	
 	}
+
+	system("pause");
 }
 
 void GameSystem::playerMove()

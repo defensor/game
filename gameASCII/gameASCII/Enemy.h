@@ -34,13 +34,13 @@ private:
 
 	int _level;
 	int _attack;
-	int _defense;
+	float _defense;
 	int _health;
 	int _experienceValue;
 	int _money;
 
 	// Route
-	stack<short> route;
+	stack<char> route;
 
 	//Position
 	int _x;

@@ -6,7 +6,9 @@
 #include <ctime>
 #include <Windows.h>
 
-HANDLE hConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);	// Дескриптор окна консоли
+// Дескриптор окна консоли
+HANDLE hConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+
 // Флаги отрисовки
 bool bPlayerInfoRewrite = true;
 bool bMapRewrite = true;
@@ -51,8 +53,8 @@ void Level::load(string fileName, Player &player)
 			case SELLER_TILE: //Seller
 				_NPC.push_back(NPC(tile));
 				_NPC.back().setPosition(j, i);
-				_NPC.back()._items.push_back(Item("Armor", 70, 5, 0.2, 0, 1, 0.03, 0));
-				_NPC.back()._items.push_back(Item("Sword", 50, 5, 0, 0.2, 1, 0, 0.03));
+				_NPC.back()._items.push_back(Item("Armor", 70, 5, .2, 0, 1, .03, 0));
+				_NPC.back()._items.push_back(Item("Sword", 50, 5, 0, .2, 1, 0, .03));
 				break;
 			case SMITH_TILE: //Koval
 				_NPC.push_back(NPC(tile));
@@ -63,23 +65,23 @@ void Level::load(string fileName, Player &player)
 				_enemies.back().setPosition(j, i);
 				break;
 			case GOBLIN_TILE: //Goblin
-				_enemies.push_back(Enemy("Goblin", tile, 2, 10, 0.05, 35, 150, 15));
+				_enemies.push_back(Enemy("Goblin", tile, 2, 10, .05, 35, 150, 15));
 				_enemies.back().setPosition(j, i);
 				break;
 			case BANDIT_TILE: //Bandit
-				_enemies.push_back(Enemy("Bandit", tile, 3, 15, 0.1, 100, 250, 30));
+				_enemies.push_back(Enemy("Bandit", tile, 3, 15, .1, 100, 250, 30));
 				_enemies.back().setPosition(j, i);
 				break;
 			case OGRE_TILE: //Ogre
-				_enemies.push_back(Enemy("Ogre", tile, 4, 40, 0.4, 200, 500, 50));
+				_enemies.push_back(Enemy("Ogre", tile, 4, 40, .4, 200, 500, 50));
 				_enemies.back().setPosition(j, i);
 				break;
 			case GOLEM_TILE: //Golem
-				_enemies.push_back(Enemy("Golem", tile, 20, 150, 0.5, 300, 1000, 100));
+				_enemies.push_back(Enemy("Golem", tile, 20, 150, .5, 300, 1000, 100));
 				_enemies.back().setPosition(j, i);
 				break;
 			case DRAGON_TILE: //Dragon
-				_enemies.push_back(Enemy("Dragon", tile, 100, 2000, 0.0, 1500, 99999, 1000));
+				_enemies.push_back(Enemy("Dragon", tile, 100, 2000, 0, 1500, 99999, 1000));
 				_enemies.back().setPosition(j, i);
 				break;
 			case UNDEAD_TILE: //Undead
@@ -233,6 +235,8 @@ void Level::battleMonster(Player &player, int targetX, int targetY)
 				player.addMoney(money);
 				
 				rewritePlayerInfo(player);
+				if (_enemies.empty())
+					writeLog("You WIN!!!");
 				return;
 			}
 
@@ -244,13 +248,11 @@ void Level::battleMonster(Player &player, int targetX, int targetY)
 			attackResult = player.takeDamage(attackRoll);
 			if (attackResult != 0)
 			{
+				// Кто-то умер
 				setTile(playerX, playerY, 'X');
 				rewritePlayerInfo(player);
-				// Отображение надписи
 				writeLog("You died!");
-				system("PAUSE");
-
-				exit(0);
+				return;
 			}
 
 			rewritePlayerInfo(player);
@@ -450,7 +452,7 @@ void Level::writeLog(string str){
 		printf("                                                                    ");
 	}
 
-	for (int i = 0; i < _log.size(); i++){
+	for (size_t i = 0; i < _log.size(); i++){
 		SetConsoleCursorPosition(hConsoleHandle, { TXT_OUT_POS.X, TXT_OUT_POS.Y + i });
 		cout << _log[i];
 	}

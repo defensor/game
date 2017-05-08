@@ -99,26 +99,25 @@ void Player::reloadItem()
 	}
 }
 
-void Player::addMoney(int money)
-{
+void Player::addMoney(int money){
 	_money += money;
 }
 
-void Player::subMoney(int money)
-{
+void Player::subMoney(int money){
 	_money -= money;
 }
 
-bool Player::isItem (int id) const
-{
+bool Player::isItem(int id) const{
 	return (id >= 0 && id < this->_items.size());
 }
 
-bool Player::upgradeItem(Item & item)
-{
+bool Player::isAlife() const{
+	return _health > 0;
+}
+
+bool Player::upgradeItem(Item & item){
 	int price = item.getUpdatePrice();
-	if (this->getMoney() >= price)
-	{
+	if (this->getMoney() >= price){
 		this->subMoney(price);
 		item.levelUp();
 		this->reloadItem();

@@ -80,6 +80,7 @@
     <ClCompile Include="GameSystem.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Level.cpp" />
+    <ClCompile Include="MenuItem.cpp" />
     <ClCompile Include="NPC.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -90,6 +91,7 @@
     <ClInclude Include="global.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="MenuItem.h" />
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>

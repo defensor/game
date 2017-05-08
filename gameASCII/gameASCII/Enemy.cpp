@@ -39,7 +39,7 @@ int Enemy::attack()
 
 int Enemy::takeDamage(int attack)
 {
-	attack *= (1-_defense);
+	attack *= float(1-_defense);
 
 	//check if the atack does damage
 	if (attack > 0)
@@ -135,7 +135,7 @@ char Enemy::getMove(int playerX, int playerY)
 			route.push(step);
 	}
 
-	short step = route.top();
+	char step = route.top();
 	route.pop();
 
 	return step;
