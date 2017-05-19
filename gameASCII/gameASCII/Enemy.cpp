@@ -3,7 +3,7 @@
 #include <ctime>
 
 
-Enemy::Enemy(string name, char tile, int level, int attack, float defense, int health, int xp, int money)
+Enemy::Enemy(string name, char tile, int level, int attack, float defense, int health, int money)
 {
 	_name = name;
 	_tile = tile;
@@ -11,7 +11,6 @@ Enemy::Enemy(string name, char tile, int level, int attack, float defense, int h
 	_attack = attack;
 	_defense = defense;
 	_health = health;
-	_experienceValue = xp;
 	_money = money;
 }
 
@@ -29,12 +28,18 @@ void Enemy::getPosition(int &x, int &y) const
 	y = _y;
 }
 
-int Enemy::attack()
-{
+int Enemy::attack()const{
 	static default_random_engine randomEngine(unsigned(time(NULL)));
 	uniform_int_distribution<int> attackRoll(0, _attack);
 
 	return attackRoll(randomEngine);
+}
+
+int Enemy::getReward()const{
+	static default_random_engine randomEngine(unsigned(time(NULL)));
+	uniform_int_distribution<int> rewardRoll(0, _money);
+
+	return rewardRoll(randomEngine);
 }
 
 int Enemy::takeDamage(int attack)
@@ -42,35 +47,37 @@ int Enemy::takeDamage(int attack)
 	attack *= float(1-_defense);
 
 	//check if the atack does damage
-	if (attack > 0)
-	{
+	if (attack > 0){
 		_health -= attack;
-		//check if he died
-		if (_health <= 0)
-		{
-			return _experienceValue;
-		}
+
+		if (_health <= 0) // если ранение не совместимо с жизнью
+			return _level * 5; // возвращаем опыт соразмерно уровню моба
 	}
-	return 0;
+
+	return -1; // или возвращаем -1, если ранение не критично
 }
 
 char Enemy::getMove(int playerX, int playerY)
 {
 	static default_random_engine randomEngine(unsigned(time(NULL)));
 	uniform_int_distribution<int> moveRoll(0, 7);
-
-	int distance;
+	uniform_int_distribution<int> distanseRoll(1, 4);
+	
 	int dx = _x - playerX;
 	int dy = _y - playerY;
 	int adx = abs(dx);
 	int ady = abs(dy);
 
-	distance = adx + ady;
+	int distance = adx + ady;
 
 
-	//Здесь добавить процедуру построения кратчайшего маршрута до игрока и одного хода по этому маршруту..................................................
+	//Здесь добавить процедуру построения кратчайшего маршрута до игрока и одного хода по этому маршруту
 	if (distance <= 5)
 	{
+		// Первым делом забываем про маршрут
+		while (!route.empty())
+			route.pop();
+
 	/*	short localMap[11][11];
 		for (int i = 0; i < 10; i++)
 		{
@@ -88,28 +95,22 @@ char Enemy::getMove(int playerX, int playerY)
 		}
 	}else{
 */
-		//Moving along X axis
-		if (adx > ady)
-		{
+		if (adx > ady) //Moving along X axis
 			if (dx > 0)
 				return MOVE_LEFT;
 			else
 				return MOVE_RIGHT;
-		}
 		else //Move along Y axis
-		{
 			if (dy > 0)
 				return MOVE_UP;
 			else
 				return MOVE_DOWN;
-		}
 	}
 
 	if (route.empty())
 	{
 		int direct = moveRoll(randomEngine); // Movings direct
-		srand(unsigned(time(NULL)));
-		int dist = rand() % 4 + 1; // Movings distance
+		int dist = distanseRoll(randomEngine); // Movings distance
 
 		char step;
 		

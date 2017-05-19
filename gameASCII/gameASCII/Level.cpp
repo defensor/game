@@ -61,31 +61,31 @@ void Level::load(string fileName, Player &player)
 				_NPC.back().setPosition(j, i);
 				break;
 			case SNAKE_TILE: //Snake
-				_enemies.push_back(Enemy("Snake", tile, 1, 3, 0, 10, 50, 10));
+				_enemies.push_back(Enemy("Snake", tile, 1, 3, 0, 10, 10));
 				_enemies.back().setPosition(j, i);
 				break;
 			case GOBLIN_TILE: //Goblin
-				_enemies.push_back(Enemy("Goblin", tile, 2, 10, .05, 35, 150, 15));
+				_enemies.push_back(Enemy("Goblin", tile, 2, 10, .05, 35, 15));
 				_enemies.back().setPosition(j, i);
 				break;
 			case BANDIT_TILE: //Bandit
-				_enemies.push_back(Enemy("Bandit", tile, 3, 15, .1, 100, 250, 30));
+				_enemies.push_back(Enemy("Bandit", tile, 3, 15, .1, 100, 30));
 				_enemies.back().setPosition(j, i);
 				break;
 			case OGRE_TILE: //Ogre
-				_enemies.push_back(Enemy("Ogre", tile, 4, 40, .4, 200, 500, 50));
+				_enemies.push_back(Enemy("Ogre", tile, 4, 40, .4, 200, 50));
 				_enemies.back().setPosition(j, i);
 				break;
 			case GOLEM_TILE: //Golem
-				_enemies.push_back(Enemy("Golem", tile, 20, 150, .5, 300, 1000, 100));
+				_enemies.push_back(Enemy("Golem", tile, 20, 150, .5, 300, 100));
 				_enemies.back().setPosition(j, i);
 				break;
 			case DRAGON_TILE: //Dragon
-				_enemies.push_back(Enemy("Dragon", tile, 100, 2000, 0, 1500, 99999, 1000));
+				_enemies.push_back(Enemy("Dragon", tile, 100, 2000, 0, 1500, 1000));
 				_enemies.back().setPosition(j, i);
 				break;
 			case UNDEAD_TILE: //Undead
-				_enemies.push_back(Enemy("Undead", tile, 1, 100000, 1, 1, 0, 0));
+				_enemies.push_back(Enemy("Undead", tile, 1, 100000, 1, 1, 0));
 				_enemies.back().setPosition(j, i);
 				break;
 			}
@@ -212,17 +212,17 @@ void Level::battleMonster(Player &player, int targetX, int targetY)
 		if ((enemyX == targetX) && (enemyY == targetY))
 		{
 			//Battle!
+			// Первым атакует герой
 			attackRoll = player.attack();
-
 			
 			writeLog("Player -> " + enemyName + " : " + std::to_string(attackRoll));
 			attackResult = _enemies[i].takeDamage(attackRoll);
 			
 			srand(unsigned(time(NULL)));
 			
-			if (attackResult != 0)
+			if (attackResult != -1)
 			{
-				money = _enemies[i].getMoney() * (rand() % 8 + 2) / 10;
+				money = _enemies[i].getReward();
 				// Отрисовка карты
 				setTile(targetX, targetY, SPACE_TILE);
 				// Отображение надписи
@@ -246,7 +246,7 @@ void Level::battleMonster(Player &player, int targetX, int targetY)
 			writeLog(enemyName + " -> player : " + std::to_string(attackRoll));
 
 			attackResult = player.takeDamage(attackRoll);
-			if (attackResult != 0)
+			if (attackResult != -1)
 			{
 				// Кто-то умер
 				setTile(playerX, playerY, 'X');
@@ -396,8 +396,6 @@ void Level::initSmithDialog(Player & player, NPC & npc)
 
 		if (player.upgradeItem(item))
 			npc.showSmithDialog(player._items, player.getMoney());
-
-		player.reloadItem();
 	}
 
 	rewriteMap(player);
@@ -417,8 +415,6 @@ void Level::initSellerDialog(Player & player, NPC & npc)
 
 		if (buyItem(player, npc, int(choice) - '0'))
 			npc.showSellerDialog(player.getMoney());
-
-		player.reloadItem();
 	}
 
 	rewriteMap(player);
@@ -434,7 +430,6 @@ bool Level::buyItem(Player & player, NPC & npc, short id)
 		{
 			player.subMoney(price);
 			player.giveItem(npc.gettingItem(id));
-			player.reloadItem();
 			return true;
 		}
 	}

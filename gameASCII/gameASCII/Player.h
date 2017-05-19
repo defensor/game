@@ -9,13 +9,16 @@ class Player
 {
 public:
 	Player();
-	void init(int level, int health, int attack, float defense, int experience, int money);
+	void init(int level, int health, int attack, float defense, int experience, int nxtLvlXP, int money);
 
-	int attack();
-
+	// Принимаем удар
 	int takeDamage(int attack);
+
+	// Дать герою объект
 	void giveItem(Item item);
-	void reloadItem();
+
+	// Возвращает размер урона от атаки моба
+	int attack()const;
 
 	// Upgrade item
 	bool upgradeItem(Item & item);
@@ -24,32 +27,29 @@ public:
 	void setPosition(int x, int y);
 	void addExperience(int experience);
 	void addMoney(int money);
-	void subMoney(int money);
 
 	// Getters
 	void getPosition(int &x, int &y)const;
 	int getLevel()const{ return _level; }
 	int getHealth()const{ return _health; }
-	int getAttack()const{ return _attack; }
-	float getDefense()const{ return _defense; }
+	int getMaxHealt()const{ return _maxHealth; }
+	int getAttack()const;
+	float getDefense()const;
 	int getExperience()const{ return _experience; }
 	int getXPProgress()const{ return (int)((_experience / _nextLevelXP) * 100); }
 	int getNextLevelXP()const{ return _nextLevelXP; }
 	int getMoney()const{ return _money; }
-	int getMaxHealt()const{ return _maxHealth; }
 	bool isItem(int id)const;
-	bool isAlife()const;
 
 private:
-	// Properties
+	// Characters
 	int _level;
 	int _health;
 	int _maxHealth;
 	int _attack;
-	int _baseAttack;
 	float _defense;
 	int _experience;
-	int _nextLevelXP = 50;
+	int _nextLevelXP;
 	int _money;
 	 
 	// Position

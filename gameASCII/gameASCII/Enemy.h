@@ -9,10 +9,15 @@ using namespace std;
 class Enemy
 {
 public:
-	Enemy(string name, char tile, int level, int attack, float defense, int health, int xp, int money);
+	Enemy(string name, char tile, int level, int attack, float defense, int health, int money);
 
-	int attack();
+	// ¬озвращает размер урона от атаки моба
+	int attack()const;
 
+	// ¬озвращает размер денежного вознаграждени€ за убийство моба
+	int getReward()const;
+
+	// ѕринимаем удар
 	int takeDamage(int attack);
 
 	// Setters
@@ -22,7 +27,6 @@ public:
 	void getPosition(int &x, int &y)const;
 	string getName()const{ return _name; }
 	char getTile()const{ return _tile; }
-	int getMoney()const{ return _money; }
 
 	// Gets AI move command
 	char getMove(int playerX, int playerY);
@@ -32,11 +36,12 @@ private:
 	string _name;
 	char _tile;
 
+	// 
 	int _level;
+	int _health;
+	int _maxHealth;
 	int _attack;
 	float _defense;
-	int _health;
-	int _experienceValue;
 	int _money;
 
 	// Route
