@@ -26,25 +26,25 @@ public:
 	void movePlayer(short move, Player &player);
 	void updateEnemies(Player &player);
 	//Getters
-	char getTile(int x, int y);
-	int getNumsOfEnemies() { return _enemies.size(); }
+	char getTile(COORD coord);
+	int getNumsOfEnemies()const;
 	//Setters
-	void setTile(int x, int y, char tile);
+	void setTile(COORD coord, char tile);
 
 private:
-	void processPlayerMove(Player &player, int targetX, int targetY);
-	void processEnemyMove(Player &player, int enemyIndex, int targetX, int targetY);
-	void battleMonster(Player &player, int targetX, int targetY);
-	void processNPCDialog(Player &player, int targetX, int targetY);
+	void processPlayerMove(Player &player, COORD targetCoord);
+	void processEnemyMove(Player &player, int enemyIndex, COORD targetCoord);
+	void battleMonster(Player &player, COORD targetCoord);
+	void processNPCDialog(Player &player, COORD targetCoord);
 	void initDialog(Player & player, NPC & npc);
 	void initSellerDialog(Player & player, NPC & npc);
 	void initSmithDialog(Player & player, NPC & npc);
 	bool buyItem(Player & player, NPC & npc, short id);
-	void openTheDoor(int x, int y);
+	void openTheDoor(COORD coord);
 private:
-	vector<string> _levelData;
-	vector<Enemy> _enemies;
-	vector<NPC> _NPC;
+	vector<string> m_levelData;
+	vector<Enemy> m_enemies;
+	vector<NPC> m_NPC;
 
-	deque<string> _log;
+	deque<string> m_log;
 };

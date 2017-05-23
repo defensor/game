@@ -3,68 +3,67 @@
 #include <ctime>
 
 
-Enemy::Enemy(string name, char tile, int level, int attack, float defense, int health, int money)
+Enemy::Enemy(string name, char tile, int level, int attack, float defense, int health, int money, COORD coord)
 {
-	_name = name;
-	_tile = tile;
-	_level = level;
-	_attack = attack;
-	_defense = defense;
-	_health = health;
-	_money = money;
+	m_name = name;
+	m_tile = tile;
+	m_level = level;
+	m_attack = attack;
+	m_defense = defense;
+	m_health = health;
+	m_money = money;
+	m_coord = coord;
 }
 
 //Sets the position of the enemy
-void Enemy::setPosition(int x, int y)
+void Enemy::setPosition(COORD coord)
 {
-	_x = x;
-	_y = y;
+	m_coord = coord;
 }
 
 //Gets the position of the enemy using reference variable
-void Enemy::getPosition(int &x, int &y) const
+COORD Enemy::getPosition() const
 {
-	x = _x;
-	y = _y;
+	return m_coord;
 }
 
 int Enemy::attack()const{
 	static default_random_engine randomEngine(unsigned(time(NULL)));
-	uniform_int_distribution<int> attackRoll(0, _attack);
+	uniform_int_distribution<int> attackRoll(0, m_attack);
 
 	return attackRoll(randomEngine);
 }
 
 int Enemy::getReward()const{
 	static default_random_engine randomEngine(unsigned(time(NULL)));
-	uniform_int_distribution<int> rewardRoll(0, _money);
+	uniform_int_distribution<int> rewardRoll(0, m_money);
 
 	return rewardRoll(randomEngine);
 }
 
 int Enemy::takeDamage(int attack)
 {
-	attack *= float(1-_defense);
+	attack *= float(1-m_defense);
 
 	//check if the atack does damage
 	if (attack > 0){
-		_health -= attack;
+		m_health -= attack;
 
-		if (_health <= 0) // если ранение не совместимо с жизнью
-			return _level * 5; // возвращаем опыт соразмерно уровню моба
+		if (m_health <= 0) // если ранение не совместимо с жизнью
+			return m_level * 5; // возвращаем опыт соразмерно уровню моба
 	}
 
 	return -1; // или возвращаем -1, если ранение не критично
 }
 
-char Enemy::getMove(int playerX, int playerY)
+char Enemy::getMove(COORD playerCoord)
 {
 	static default_random_engine randomEngine(unsigned(time(NULL)));
 	uniform_int_distribution<int> moveRoll(0, 7);
 	uniform_int_distribution<int> distanseRoll(1, 4);
 	
-	int dx = _x - playerX;
-	int dy = _y - playerY;
+	int dx = m_coord.X - playerCoord.X;
+	int dy = m_coord.Y - playerCoord.Y;
 	int adx = abs(dx);
 	int ady = abs(dy);
 
@@ -83,7 +82,7 @@ char Enemy::getMove(int playerX, int playerY)
 		{
 			for (int j = 0; j < 10; j++)
 			{
-				if ((_x + (j - 5) < 0) || (_y + (i - 5) < 0))
+				if ((m_x + (j - 5) < 0) || (m_y + (i - 5) < 0))
 				{
 					localMap[i][j] = -1;
 					continue;
@@ -94,7 +93,7 @@ char Enemy::getMove(int playerX, int playerY)
 			}
 		}
 	}else{
-*/
+	*/
 		if (adx > ady) //Moving along X axis
 			if (dx > 0)
 				return MOVE_LEFT;
@@ -140,4 +139,11 @@ char Enemy::getMove(int playerX, int playerY)
 	route.pop();
 
 	return step;
+}
+
+string Enemy::getName()const{ 
+	return m_name; 
+}
+char Enemy::getTile()const{ 
+	return m_tile; 
 }

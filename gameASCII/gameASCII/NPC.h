@@ -11,24 +11,24 @@ typedef vector<Item> Items;
 class NPC
 {
 public:
-	NPC(char tile);
+	NPC(string name, char tile, COORD coord);
 
-	void getPosition(int & x, int & y){ x = _x; y = _y; };
-	char getTile()const{ return _tile; }
-	string getName()const{ return _name; }
+	COORD getPosition()const;
+	char getTile()const;
+	string getName()const;
 
-	Item gettingItem(short id);
+	void removeItem(short id);
 	bool isItem(short id) const;
 	void showSellerDialog(unsigned money);
-	void showSmithDialog(Items items, unsigned money);
+	void showSmithDialog(const Items & playerItems, unsigned money)const;
 
-	void setPosition(int x, int y);
+	void setPosition(COORD coord);
 private:
-	int _x;
-	int _y;
-	char _tile;
-	string _name;
+	COORD m_coord;
+
+	char m_tile;
+	string m_name;
 
 public:
-	vector<Item> _items; //Товары
+	vector<Item> m_items; //Товары
 };

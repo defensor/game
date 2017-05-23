@@ -4,10 +4,8 @@
 //Constructor sets up the game
 GameSystem::GameSystem(string levelFileName)
 {
-	_player.init(1, 100, 10, 0, 0, 0);
+	_player.init(1, 100, 10, 0, 0, 0, 0);
 	_level.load(levelFileName, _player);
-
-	system("PAUSE");
 }
 
 void GameSystem::PlayGame()

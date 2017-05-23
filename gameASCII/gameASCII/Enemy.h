@@ -9,7 +9,7 @@ using namespace std;
 class Enemy
 {
 public:
-	Enemy(string name, char tile, int level, int attack, float defense, int health, int money);
+	Enemy(string name, char tile, int level, int attack, float defense, int health, int money, COORD p);
 
 	// ¬озвращает размер урона от атаки моба
 	int attack()const;
@@ -21,33 +21,32 @@ public:
 	int takeDamage(int attack);
 
 	// Setters
-	void setPosition(int x, int y);
+	void setPosition(COORD coord);
 
 	// Getters
-	void getPosition(int &x, int &y)const;
-	string getName()const{ return _name; }
-	char getTile()const{ return _tile; }
+	COORD getPosition()const;
+	string getName()const;
+	char getTile()const;
 
 	// Gets AI move command
-	char getMove(int playerX, int playerY);
+	char getMove(COORD playerCoord);
 
 private:
 	// Characters
-	string _name;
-	char _tile;
+	string m_name;
+	char m_tile;
 
 	// 
-	int _level;
-	int _health;
-	int _maxHealth;
-	int _attack;
-	float _defense;
-	int _money;
+	int m_level;
+	int m_health;
+	int m_maxHealth;
+	int m_attack;
+	float m_defense;
+	int m_money;
 
 	// Route
 	stack<char> route;
 
 	//Position
-	int _x;
-	int _y;
+	COORD m_coord;
 };

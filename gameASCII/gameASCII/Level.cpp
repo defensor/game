@@ -32,7 +32,7 @@ void Level::load(string fileName, Player &player)
 
 	while (getline(file, line))
 	{
-		_levelData.push_back(line);
+		m_levelData.push_back(line);
 	}
 
 	file.close();
@@ -40,53 +40,46 @@ void Level::load(string fileName, Player &player)
 	//Process the level
 	char tile;
 
-	for (size_t i = 0; i < _levelData.size(); i++)
-		for (size_t j = 0; j < _levelData[i].size(); j++)
+	COORD p;
+
+	for (p.Y = 0; p.Y < m_levelData.size(); p.Y++)
+		for (p.X = 0; p.X < m_levelData[p.Y].size(); p.X++)
 		{
-			tile = _levelData[i][j];
+			tile = m_levelData[p.Y][p.X];
 			
 			switch (tile)
 			{
 			case PLAYER_TILE: //Player
-				player.setPosition(j, i);
+				player.setPosition(p);
 				break;
 			case SELLER_TILE: //Seller
-				_NPC.push_back(NPC(tile));
-				_NPC.back().setPosition(j, i);
-				_NPC.back()._items.push_back(Item("Armor", 70, 5, .2, 0, 1, .03, 0));
-				_NPC.back()._items.push_back(Item("Sword", 50, 5, 0, .2, 1, 0, .03));
+				m_NPC.push_back(NPC("Seller", tile, p));
+				m_NPC.back().m_items.push_back(Item("Armor", 70, 5, .2, 0, 1, .03, 0));
+				m_NPC.back().m_items.push_back(Item("Sword", 50, 5, 0, .2, 1, 0, 3));
 				break;
 			case SMITH_TILE: //Koval
-				_NPC.push_back(NPC(tile));
-				_NPC.back().setPosition(j, i);
+				m_NPC.push_back(NPC("Smith", tile, p));
 				break;
 			case SNAKE_TILE: //Snake
-				_enemies.push_back(Enemy("Snake", tile, 1, 3, 0, 10, 10));
-				_enemies.back().setPosition(j, i);
+				m_enemies.push_back(Enemy("Snake", tile, 1, 3, 0, 10, 10, p));
 				break;
 			case GOBLIN_TILE: //Goblin
-				_enemies.push_back(Enemy("Goblin", tile, 2, 10, .05, 35, 15));
-				_enemies.back().setPosition(j, i);
+				m_enemies.push_back(Enemy("Goblin", tile, 2, 10, .05, 35, 15, p));
 				break;
 			case BANDIT_TILE: //Bandit
-				_enemies.push_back(Enemy("Bandit", tile, 3, 15, .1, 100, 30));
-				_enemies.back().setPosition(j, i);
+				m_enemies.push_back(Enemy("Bandit", tile, 3, 15, .1, 100, 30, p));
 				break;
 			case OGRE_TILE: //Ogre
-				_enemies.push_back(Enemy("Ogre", tile, 4, 40, .4, 200, 50));
-				_enemies.back().setPosition(j, i);
+				m_enemies.push_back(Enemy("Ogre", tile, 4, 40, .4, 200, 50, p));
 				break;
 			case GOLEM_TILE: //Golem
-				_enemies.push_back(Enemy("Golem", tile, 20, 150, .5, 300, 100));
-				_enemies.back().setPosition(j, i);
+				m_enemies.push_back(Enemy("Golem", tile, 20, 150, .5, 300, 100, p));
 				break;
 			case DRAGON_TILE: //Dragon
-				_enemies.push_back(Enemy("Dragon", tile, 100, 2000, 0, 1500, 1000));
-				_enemies.back().setPosition(j, i);
+				m_enemies.push_back(Enemy("Dragon", tile, 100, 2000, 0, 1500, 1000, p));
 				break;
 			case UNDEAD_TILE: //Undead
-				_enemies.push_back(Enemy("Undead", tile, 1, 100000, 1, 1, 0));
-				_enemies.back().setPosition(j, i);
+				m_enemies.push_back(Enemy("Undead", tile, 1, 100000, 1, 1, 0, p));
 				break;
 			}
 		}
@@ -97,7 +90,7 @@ void Level::rewriteMap(Player player){
 
 	rewritePlayerInfo(player);
 
-	for (vector<string>::const_iterator ci = _levelData.begin(); ci < _levelData.end(); ci++)
+	for (vector<string>::const_iterator ci = m_levelData.begin(); ci < m_levelData.end(); ci++)
 		printf("%s\n", ci->c_str());
 }
 
@@ -118,130 +111,126 @@ void Level::rewritePlayerInfo(Player player){
 
 void Level::movePlayer(short move, Player &player)
 {
-	int playerX;
-	int playerY;
+	COORD playerCoord;
 
-	player.getPosition(playerX, playerY);
+	playerCoord = player.getPosition();
 
 
 	switch (move)
 	{
 	case MOVE_UP:
-		processPlayerMove(player, playerX, playerY - 1);
+		processPlayerMove(player, { playerCoord.X, playerCoord.Y - 1 });
 		break;
 	case MOVE_DOWN:
-		processPlayerMove(player, playerX, playerY + 1);
+		processPlayerMove(player, { playerCoord.X, playerCoord.Y + 1 });
 		break;
 	case MOVE_LEFT:
-		processPlayerMove(player, playerX - 1, playerY);
+		processPlayerMove(player, { playerCoord.X - 1, playerCoord.Y });
 		break;
 	case MOVE_RIGHT:
-		processPlayerMove(player, playerX + 1, playerY);
+		processPlayerMove(player, { playerCoord.X + 1, playerCoord.Y });
 		break;
 	case STAY:
 		break;
 	}
 }
 
-char Level::getTile(int x, int y)
+char Level::getTile(COORD coord)
 {
-	return _levelData[y][x];
+	return m_levelData[coord.Y][coord.X];
 }
 
-void Level::setTile(int x, int y, char tile)
+void Level::setTile(COORD coord, char tile)
 {
 	// Отрисовка символа по позиции
-	_levelData[y][x] = tile;
+	m_levelData[coord.Y][coord.X] = tile;
 
-	SetConsoleCursorPosition(hConsoleHandle, { x + MAP_POS.X, y + MAP_POS.Y});
+	SetConsoleCursorPosition(hConsoleHandle, { coord.X + MAP_POS.X, coord.Y + MAP_POS.Y});
 	std::cout << tile;
 }
 
-void Level::processPlayerMove(Player &player, int targetX, int targetY)
+void Level::processPlayerMove(Player &player, COORD targetCoord)
 {
-	int playerX;
-	int playerY;
+	COORD playerCoord;
 
-	player.getPosition(playerX, playerY);
+	playerCoord = player.getPosition();
 
-	char moveTile = getTile(targetX, targetY);
+	char moveTile = getTile(targetCoord);
 
 	switch (moveTile)
 	{
 	case SPACE_TILE:
-		player.setPosition(targetX, targetY);
-		setTile(playerX, playerY, SPACE_TILE);
-		setTile(targetX, targetY, PLAYER_TILE);
+		player.setPosition(targetCoord);
+		setTile(playerCoord, SPACE_TILE);
+		setTile(targetCoord, PLAYER_TILE);
 		break;
 	case STONE_TILE:
 		break;
 	case SELLER_TILE:
 		//cout << "Pressed 'E' for dialog." << endl;
-		processNPCDialog(player, targetX, targetY);
+		processNPCDialog(player, targetCoord);
 		break;
 	case SMITH_TILE:
-		processNPCDialog(player, targetX, targetY);
+		processNPCDialog(player, targetCoord);
 	case VDOOR_TILE:
 	case HDOOR_TILE:
-		openTheDoor(targetX, targetY);
+		openTheDoor(targetCoord);
 		break;
 	default:
-		battleMonster(player, targetX, targetY);
+		battleMonster(player, targetCoord);
 		break;
 	}
 }
 
-void Level::battleMonster(Player &player, int targetX, int targetY)
+void Level::battleMonster(Player &player, COORD targetCoord)
 {
-	int enemyX;
-	int enemyY;
-	int playerX;
-	int playerY;
+	COORD enemyCoord;
+	COORD playerCoord;
 	int attackRoll;
 	int attackResult;
 	int money;
 	string enemyName;
 
-	player.getPosition(playerX, playerY);
+	playerCoord = player.getPosition();
 
-	for (size_t i = 0; i < _enemies.size(); i++)
+	for (size_t i = 0; i < m_enemies.size(); i++)
 	{
-		_enemies[i].getPosition(enemyX, enemyY);
-		enemyName = _enemies[i].getName();
+		enemyCoord = m_enemies[i].getPosition();
+		enemyName = m_enemies[i].getName();
 
-		if ((enemyX == targetX) && (enemyY == targetY))
+		if ((enemyCoord.X == targetCoord.X) && (enemyCoord.Y == targetCoord.Y))
 		{
 			//Battle!
 			// Первым атакует герой
 			attackRoll = player.attack();
 			
 			writeLog("Player -> " + enemyName + " : " + std::to_string(attackRoll));
-			attackResult = _enemies[i].takeDamage(attackRoll);
+			attackResult = m_enemies[i].takeDamage(attackRoll);
 			
 			srand(unsigned(time(NULL)));
 			
 			if (attackResult != -1)
 			{
-				money = _enemies[i].getReward();
+				money = m_enemies[i].getReward();
 				// Отрисовка карты
-				setTile(targetX, targetY, SPACE_TILE);
+				setTile(targetCoord, SPACE_TILE);
 				// Отображение надписи
 				writeLog(enemyName + " died!");
 				//Remove the enemy
-				_enemies[i] = _enemies.back();
-				_enemies.pop_back();
+				m_enemies[i] = m_enemies.back();
+				m_enemies.pop_back();
 				i--;
 				player.addExperience(attackResult);
 				player.addMoney(money);
 				
 				rewritePlayerInfo(player);
-				if (_enemies.empty())
+				if (m_enemies.empty())
 					writeLog("You WIN!!!");
 				return;
 			}
 
 			//Monster turns!
-			attackRoll = _enemies[i].attack();
+			attackRoll = m_enemies[i].attack();
 			// Отображение надписи
 			writeLog(enemyName + " -> player : " + std::to_string(attackRoll));
 
@@ -249,7 +238,7 @@ void Level::battleMonster(Player &player, int targetX, int targetY)
 			if (attackResult != -1)
 			{
 				// Кто-то умер
-				setTile(playerX, playerY, 'X');
+				setTile(playerCoord, 'X');
 				rewritePlayerInfo(player);
 				writeLog("You died!");
 				return;
@@ -264,88 +253,82 @@ void Level::battleMonster(Player &player, int targetX, int targetY)
 void Level::updateEnemies(Player &player)
 {
 	char aiMove;
-	int playerX;
-	int playerY;
-	int enemyX;
-	int enemyY;
+	COORD playerCoord;
+	COORD enemyCoord;
 
-	player.getPosition(playerX, playerY);
-	for (size_t i = 0; i < _enemies.size(); i++)
+	playerCoord = player.getPosition();
+	for (size_t i = 0; i < m_enemies.size(); i++)
 	{
-		_enemies[i].getPosition(enemyX, enemyY);
-		aiMove = _enemies[i].getMove(playerX, playerY);
+		enemyCoord = m_enemies[i].getPosition();
+		aiMove = m_enemies[i].getMove(playerCoord);
 
 		switch (aiMove)
 		{
 		case MOVE_UP: //up
-			processEnemyMove(player, i, enemyX, enemyY - 1);
+			processEnemyMove(player, i, {enemyCoord.X, enemyCoord.Y - 1	});
 			break;
 		case MOVE_DOWN: //down
-			processEnemyMove(player, i, enemyX, enemyY + 1);
+			processEnemyMove(player, i, { enemyCoord.X, enemyCoord.Y + 1 });
 			break;
 		case MOVE_LEFT: //left
-			processEnemyMove(player, i, enemyX - 1, enemyY);
+			processEnemyMove(player, i, { enemyCoord.X - 1, enemyCoord.Y });
 			break;
 		case MOVE_RIGHT: //right
-			processEnemyMove(player, i, enemyX + 1, enemyY);
+			processEnemyMove(player, i, { enemyCoord.X + 1, enemyCoord.Y });
 			break;
 		}
 	}
 }
 
-void Level::processEnemyMove(Player &player, int enemyIndex, int targetX, int targetY)
+void Level::processEnemyMove(Player &player, int enemyIndex, COORD targetCoord)
 {
-	int playerX;
-	int playerY;
-	int enemyX;
-	int enemyY;
+	COORD playerCoord;
+	COORD enemyCoord;
 
-	_enemies[enemyIndex].getPosition(enemyX, enemyY);
-	player.getPosition(playerX, playerY);
+	enemyCoord = m_enemies[enemyIndex].getPosition();
+	playerCoord = player.getPosition();
 
-	char moveTile = getTile(targetX, targetY);
+	char moveTile = getTile(targetCoord);
 
 	switch (moveTile)
 	{
 	case SPACE_TILE:
-		_enemies[enemyIndex].setPosition(targetX, targetY);
-		setTile(enemyX, enemyY, SPACE_TILE);
-		setTile(targetX, targetY, _enemies[enemyIndex].getTile());
+		m_enemies[enemyIndex].setPosition(targetCoord);
+		setTile(enemyCoord, SPACE_TILE);
+		setTile(targetCoord, m_enemies[enemyIndex].getTile());
 		break;
 	case PLAYER_TILE:
-		battleMonster(player, enemyX, enemyY);
+		battleMonster(player, enemyCoord);
 		break;
 	default:
 		break;
 	}
 }
 
-void Level::processNPCDialog(Player &player, int targetX, int targetY)
+void Level::processNPCDialog(Player &player, COORD targetCoord)
 {
-	int npcX;
-	int npcY;
-	int playerX;
-	int playerY;
+	COORD npcCoord;
+	COORD playerCoord;
 	string npcName;
 
-	player.getPosition(playerX, playerY);
+	playerCoord = player.getPosition();
 
-	for (size_t i = 0; i < _NPC.size(); i++)
+	for (size_t i = 0; i < m_NPC.size(); i++)
 	{
-		_NPC[i].getPosition(npcX, npcY);
-
-		if ((npcX == targetX) && (npcY == targetY))
+		npcCoord = m_NPC[i].getPosition();
+		
+		if ((npcCoord.X == targetCoord.X) && (npcCoord.Y == targetCoord.Y))
 		{
-			initDialog(player, _NPC[i]);
+			initDialog(player, m_NPC[i]);
 			break;
 		}
 	}
 }
 
-void Level::openTheDoor(int x, int y)
+void Level::openTheDoor(COORD coord)
 {
-	if (getTile(x, y) == HDOOR_TILE || getTile(x, y) == VDOOR_TILE)
-		setTile(x, y, SPACE_TILE);
+	if (getTile(coord) == HDOOR_TILE || getTile(coord) == VDOOR_TILE)
+		setTile(coord, SPACE_TILE);
 }
 
 void Level::initDialog(Player & player, NPC & npc)
@@ -363,7 +346,7 @@ void Level::initDialog(Player & player, NPC & npc)
 
 void Level::initSmithDialog(Player & player, NPC & npc)
 {
-	npc.showSmithDialog(player._items, player.getMoney());
+	npc.showSmithDialog(player.m_items, player.getMoney());
 
 	char choice = ' ';
 	while (true)
@@ -380,22 +363,22 @@ void Level::initSmithDialog(Player & player, NPC & npc)
 
 		int id = 0;
 		size_t i;
-		for (i = 0; i < player._items.size(); i++)
+		for (i = 0; i < player.m_items.size(); i++)
 		{
-			if (player._items[i].getLevel() == 10)
+			if (player.m_items[i].getLevel() == 10)
 				continue;
 			if (id == choice)
 				break;
 			id++;
 		}
 
-		if (i == player._items.size())
+		if (i == player.m_items.size())
 			continue;
 
-		Item & item = player._items.at(i);
+		Item & item = player.m_items.at(i);
 
 		if (player.upgradeItem(item))
-			npc.showSmithDialog(player._items, player.getMoney());
+			npc.showSmithDialog(player.m_items, player.getMoney());
 	}
 
 	rewriteMap(player);
@@ -413,8 +396,9 @@ void Level::initSellerDialog(Player & player, NPC & npc)
 		if (choice == '0')
 			break;
 
-		if (buyItem(player, npc, int(choice) - '0'))
+		if (buyItem(player, npc, int(choice) - '0')){
 			npc.showSellerDialog(player.getMoney());
+		}
 	}
 
 	rewriteMap(player);
@@ -425,30 +409,34 @@ bool Level::buyItem(Player & player, NPC & npc, short id)
 	id--;
 	if (npc.isItem(id))
 	{
-		int price = npc._items[id].getPrice();
-		if (player.getMoney() >= price)
-		{
-			player.subMoney(price);
-			player.giveItem(npc.gettingItem(id));
+		if (player.buyItem(npc.m_items[id]))
+			npc.removeItem(id);
+		else
+			return false;
+
 			return true;
-		}
 	}
+
 	return false;
 }
 
 void Level::writeLog(string str){
-	_log.push_front(str);
+	m_log.push_front(str);
 
-	if (_log.size() > LOG_MAX)
-		_log.pop_back();
+	if (m_log.size() > LOG_MAX)
+		m_log.pop_back();
 
 	for (int i = 0; i < LOG_MAX; i++){
 		SetConsoleCursorPosition(hConsoleHandle, { TXT_OUT_POS.X, TXT_OUT_POS.Y + i });
 		printf("                                                                    ");
 	}
 
-	for (size_t i = 0; i < _log.size(); i++){
+	for (size_t i = 0; i < m_log.size(); i++){
 		SetConsoleCursorPosition(hConsoleHandle, { TXT_OUT_POS.X, TXT_OUT_POS.Y + i });
-		cout << _log[i];
+		cout << m_log[i];
 	}
+}
+
+int Level::getNumsOfEnemies()const{ 
+	return m_enemies.size(); 
 }

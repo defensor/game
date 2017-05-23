@@ -11,25 +11,25 @@ public:
 	Item(string name, int price, int updatePrice, float defense, int damage, short level, float defenceUpdateDifference, float damageUpdateDifference);
 
 	// Getters
-	string getName()const{ return _name; }
-	int getPrice()const{ return _price; }
-	int getUpdatePrice()const{ return _baseUpdatePrice + BASE_LVL_UPDATE_DIFERENCE * this->_level;; }
-	float getDefense()const{ return _defense + _defenceUpdateDifference * _level; }
-	int getDamage()const{ return _damage + _damageUpdateDifference * _level; }
-	short getLevel()const{ return _level; }
-	float getDefenceUpdateDifference()const{ return _defenceUpdateDifference; }
-	float getDamageUpdateDifference()const{ return _damageUpdateDifference; }
+	string getName()const;
+	int getPrice()const;
+	int getUpdatePrice()const;
+	float getDefense()const;
+	int getDamage()const;
+	short getLevel()const;
+	float getDefenceUpdateDifference()const;
+	int getDamageUpdateDifference()const;
 
 	//Level update
-	void levelUp(){ this->_level++; };
+	void levelUp();
 private:
-	string _name;
-	int _price;
-	int _baseUpdatePrice;
-	float _defenceUpdateDifference;
-	float _damageUpdateDifference;
+	string m_name;
+	int m_price;
+	int m_baseUpdatePrice;
+	float m_defenceUpdateDifference;
+	float m_damageUpdateDifference;
 
-	float _defense;
-	int _damage;
-	short _level;
+	float m_defense;
+	int m_damage;
+	short m_level;
 };

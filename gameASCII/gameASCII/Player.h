@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Item.h"
+#include "global.h"
 #include <vector>
 
 typedef vector<Item> Items;
@@ -15,7 +16,8 @@ public:
 	int takeDamage(int attack);
 
 	// Дать герою объект
-	void giveItem(Item item);
+	//void giveItem(Item item);
+	bool buyItem(Item item);
 
 	// Возвращает размер урона от атаки моба
 	int attack()const;
@@ -24,38 +26,38 @@ public:
 	bool upgradeItem(Item & item);
 
 	// Setters
-	void setPosition(int x, int y);
+	void setPosition(COORD coord);
 	void addExperience(int experience);
 	void addMoney(int money);
 
 	// Getters
-	void getPosition(int &x, int &y)const;
-	int getLevel()const{ return _level; }
-	int getHealth()const{ return _health; }
-	int getMaxHealt()const{ return _maxHealth; }
+	COORD getPosition()const;
+	int getLevel()const;
+	int getHealth()const;
+	int getMaxHealt()const;
 	int getAttack()const;
 	float getDefense()const;
-	int getExperience()const{ return _experience; }
-	int getXPProgress()const{ return (int)((_experience / _nextLevelXP) * 100); }
-	int getNextLevelXP()const{ return _nextLevelXP; }
-	int getMoney()const{ return _money; }
+	int getExperience()const;
+	int getXPProgress()const;
+	int getNextLevelXP()const;
+	int getMoney()const;
 	bool isItem(int id)const;
+	bool isAlife()const;
 
 private:
 	// Characters
-	int _level;
-	int _health;
-	int _maxHealth;
-	int _attack;
-	float _defense;
-	int _experience;
-	int _nextLevelXP;
-	int _money;
+	int m_level;
+	int m_health;
+	int m_maxHealth;
+	int m_attack;
+	float m_defense;
+	int m_experience;
+	int m_nextLevelXP;
+	int m_money;
 	 
 	// Position
-	int _x;
-	int _y;
+	COORD m_coord;
 
 public:
-	Items _items;
+	Items m_items;
 };
